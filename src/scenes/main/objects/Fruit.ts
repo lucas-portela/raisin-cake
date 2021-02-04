@@ -11,7 +11,7 @@ export default class Fruit extends GameObject {
       this.position.x,
       this.position.y,
       this.size,
-      { friction: 0, frictionAir: 0, restitution: 1 }
+      { friction: 0, frictionAir: 0, restitution: 1, mass: 300 }
     );
     this.graphics.beginFill(0x845ec2);
     this.graphics.drawCircle(0, 0, this.size);
