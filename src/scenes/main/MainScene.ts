@@ -78,7 +78,7 @@ export default class MainScene extends GameScene {
                   Math.sign(fruit.position.x - this.cake.position.x) *
                   fruit.speed *
                   0.2,
-                y: -fruit.speed,
+                y: -fruit.speed * 0.4,
               }),
             10
           );
