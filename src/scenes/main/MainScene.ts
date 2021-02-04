@@ -76,8 +76,9 @@ export default class MainScene extends GameScene {
               Matter.Body.setVelocity(fruit.body, {
                 x:
                   Math.sign(fruit.position.x - this.cake.position.x) *
-                  fruit.speed,
-                y: -fruit.speed * 0.2,
+                  fruit.speed *
+                  0.2,
+                y: -fruit.speed,
               }),
             10
           );

@@ -1,6 +1,7 @@
 export default [
   { name: "background", url: "sprites/background.png" },
   { name: "cake", url: "sprites/cake.png" },
+  { name: "raisin", url: "sprites/raisin.png" },
   { name: "table", url: "sprites/table.png" },
   { name: "ballon-1", url: "sprites/ballon_1.png" },
   { name: "ballon-2", url: "sprites/ballon_2.png" },

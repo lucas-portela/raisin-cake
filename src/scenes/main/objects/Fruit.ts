@@ -1,3 +1,4 @@
+import * as PIXI from "pixi.js";
 import * as Matter from "matter-js";
 import GameObject from "../../../core/GameObject";
 
@@ -11,10 +12,23 @@ export default class Fruit extends GameObject {
       this.position.x,
       this.position.y,
       this.size,
-      { friction: 0, frictionAir: 0, restitution: 1, mass: 300 }
+      {
+        friction: 0.3,
+        frictionAir: 0,
+        restitution: 0.1,
+        mass: 300,
+        angle: Math.random() * Math.PI,
+      }
     );
-    this.graphics.beginFill(0x845ec2);
-    this.graphics.drawCircle(0, 0, this.size);
+
+    const sprite = new PIXI.Sprite(this.scene.context.resources.raisin.texture);
+    const spriteScale = (this.size / sprite.width) * 1.9;
+    sprite.scale.set(spriteScale, spriteScale);
+    sprite.position.set(-sprite.width * 0.5, -sprite.height * 0.5);
+    this.graphics.addChild(sprite);
+
+    // this.graphics.beginFill(0x845ec2);
+    // this.graphics.drawCircle(0, 0, this.size);
 
     Matter.Body.setVelocity(this.body, { x: 0, y: this.speed });
   }
