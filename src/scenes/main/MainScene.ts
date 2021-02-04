@@ -1,3 +1,4 @@
+import * as PIXI from "pixi.js";
 import * as Matter from "matter-js";
 import GameObject from "src/core/GameObject";
 import GameScene from "../../core/GameScene";
@@ -10,8 +11,8 @@ export default class MainScene extends GameScene {
   fruitsInScreenHorizontaly = 30; // Parameter used to calculate fruit size
   fruitAverageSize: number;
   lastFruitSpawn: number;
-  cake: GameObject;
-  ground: GameObject;
+  cake: Cake;
+  ground: Ground;
   points: number;
   gameOver: boolean;
   expectedScreenHeight = 1920;
@@ -32,8 +33,18 @@ export default class MainScene extends GameScene {
     for (let i = 0; i < this.fruitsInScreenHorizontaly; i++)
       this.spawnSlots.push({ index: i, gameObject: null });
 
-    this.ground = this.add(new Ground());
-    this.cake = this.add(new Cake());
+    this.ground = this.add(new Ground()) as Ground;
+    this.cake = this.add(new Cake()) as Cake;
+
+    const bg = new PIXI.Sprite(this.context.resources.background.texture);
+    const bgScale = this.width / bg.width;
+    bg.scale.set(bgScale, bgScale);
+    bg.position.x = this.width / 2 - bg.width / 2;
+    bg.position.y = this.height - bg.height - this.ground.height;
+
+    this.container.addChildAt(bg, 0);
+
+    // this.debug();
   }
 
   releaseSlot(fruit: GameObject) {

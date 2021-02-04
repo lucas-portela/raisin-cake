@@ -1,5 +1,5 @@
 export default [
-  { name: "scene", url: "sprites/scene.png" },
+  { name: "background", url: "sprites/background.png" },
   { name: "cake", url: "sprites/cake.png" },
   { name: "table", url: "sprites/table.png" },
   { name: "ballon-1", url: "sprites/ballon_1.png" },

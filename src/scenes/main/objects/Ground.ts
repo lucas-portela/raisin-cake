@@ -15,7 +15,7 @@ export default class Ground extends GameObject {
       { isStatic: true }
     );
 
-    this.graphics.beginFill(0xff5e78);
+    this.graphics.beginFill(0x1e8e63);
     this.graphics.drawRect(
       -this.scene.width / 2,
       -this.height / 2,
