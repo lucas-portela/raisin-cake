@@ -1,0 +1,24 @@
+{
+  "name": "raisin-cake",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Lucas Santana do Nascimento Portela <lucas.softdev@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-dev-server",
+    "build": "cross-env NODE_ENV=production webpack"
+  },
+  "devDependencies": {
+    "webpack-typescript-boilerplate": "^1.1.1"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.168",
+    "@types/matter-js": "^0.14.10",
+    "jquery": "^3.5.1",
+    "lodash": "^4.17.20",
+    "matter-js": "^0.16.1",
+    "pixi.js": "^5.3.7",
+    "poly-decomp": "^0.3.0"
+  }
+}
