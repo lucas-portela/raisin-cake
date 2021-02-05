@@ -13,7 +13,7 @@ export default [
     spawnInterval: 3,
     minSpeed: 0.5,
     maxSpeed: 0.7,
-    amount: 2,
+    amount: 1,
   },
   {
     time: 70,

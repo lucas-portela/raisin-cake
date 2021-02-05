@@ -185,7 +185,7 @@ export default class MainScene extends GameScene {
       this.timestamp - this.lastFruitSpawn > level.spawnInterval &&
       level.spawnProbability > Math.random()
     ) {
-      const amount = Math.ceil(Math.random() * level.amount);
+      const amount = Math.max(Math.round(Math.random() * level.amount), 1);
       for (let i = 0; i < amount; i++) {
         const availableSlots = this.spawnSlots.filter((x) => !x.gameObject);
         console.log(this.gameObjects.length);

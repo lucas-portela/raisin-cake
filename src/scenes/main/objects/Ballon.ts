@@ -30,8 +30,12 @@ export default class Ballon extends GameObject {
   }
 
   update(deltaTime: number) {
-    this.animI += deltaTime * this.animStepSize;
-    this.position.y =
-      this.initialY + Math.sin(this.animI) * this.scene.height * 0.01;
+    if ((this.scene as any).gameOver)
+      this.position.y -= this.scene.height * 0.01;
+    else {
+      this.animI += deltaTime * this.animStepSize;
+      this.position.y =
+        this.initialY + Math.sin(this.animI) * this.scene.height * 0.01;
+    }
   }
 }
