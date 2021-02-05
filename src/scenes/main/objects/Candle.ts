@@ -9,11 +9,11 @@ export default class Candle extends GameObject {
 
   setup() {
     this.width = Math.min(this.scene.width * 0.15, 80);
-    this.height = this.width;
+    this.height = this.width * 0.7;
 
     this.body = Matter.Bodies.rectangle(
       this.scene.width / 2,
-      this.scene.height - this.scene.height * 0.25 - this.height * 1.6,
+      this.scene.height - this.scene.height * 0.25 - this.width * 1.6,
       this.width,
       this.height,
       { isStatic: true }
