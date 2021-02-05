@@ -6,13 +6,18 @@ import Cake from "./objects/Cake";
 import Fruit from "./objects/Fruit";
 import Ground from "./objects/Ground";
 import levels from "./levels";
+import Candle from "./objects/Candle";
+import PunchFist from "./objects/PunchFist";
+import Ballon from "./objects/Ballon";
 
 export default class MainScene extends GameScene {
   fruitsInScreenHorizontaly = 30; // Parameter used to calculate fruit size
   fruitAverageSize: number;
   lastFruitSpawn: number;
   cake: Cake;
+  candle: Candle;
   ground: Ground;
+  punchFist: PunchFist;
   points: number;
   gameOver: boolean;
   expectedScreenHeight = 1920;
@@ -34,7 +39,27 @@ export default class MainScene extends GameScene {
       this.spawnSlots.push({ index: i, gameObject: null });
 
     this.ground = this.add(new Ground()) as Ground;
+    this.add(
+      new Ballon().set({
+        position: { x: this.width * 0.95, y: this.height * 0.73 },
+      })
+    );
+    this.add(
+      new Ballon().set({
+        position: { x: this.width * 0.05, y: this.height * 0.73 },
+      })
+    );
     this.cake = this.add(new Cake()) as Cake;
+    this.candle = this.add(new Candle()) as Candle;
+    this.punchFist = this.add(new PunchFist()) as PunchFist;
+
+    const table = new PIXI.Sprite(this.context.resources.table.texture);
+    const tableScale = (this.width / table.width) * 1.2;
+    table.scale.set(tableScale, tableScale);
+    table.position.x = this.width / 2 - table.width / 2;
+    table.position.y = this.height - table.height - this.ground.height * 0.7;
+
+    this.container.addChildAt(table, 1);
 
     const bg = new PIXI.Sprite(this.context.resources.background.texture);
     const bgScale = this.width / bg.width;
@@ -56,6 +81,8 @@ export default class MainScene extends GameScene {
     const objNames = [gameObjectA.name, gameObjectB.name];
     const hasFruits = objNames.includes("fruit");
     const hasCake = objNames.includes("cake");
+    const hasGround = objNames.includes("ground");
+    const hasPunchFist = objNames.includes("punch-fist");
     [gameObjectA, gameObjectB].forEach(
       (gameObject) => gameObject.name == "fruit" && this.releaseSlot(gameObject)
     );
@@ -71,17 +98,37 @@ export default class MainScene extends GameScene {
           this.physics.world.gravity.y =
             (this.height / this.expectedScreenHeight) * 0.1;
         } else {
-          setTimeout(
-            () =>
-              Matter.Body.setVelocity(fruit.body, {
-                x:
-                  Math.sign(fruit.position.x - this.cake.position.x) *
-                  fruit.speed *
-                  0.2,
-                y: -fruit.speed * 0.4,
-              }),
-            10
-          );
+          if (hasGround || hasPunchFist)
+            setTimeout(() => {
+              if (hasGround) {
+                Matter.Body.setVelocity(fruit.body, {
+                  x:
+                    Math.sign(fruit.position.x - this.cake.position.x) *
+                    fruit.speed *
+                    0.2,
+                  y: -fruit.speed * 0.4,
+                });
+              } else if (hasPunchFist) {
+                Matter.Body.setVelocity(fruit.body, {
+                  x:
+                    ((this.punchFist.direction *
+                      Math.abs(
+                        fruit.position.x -
+                          (this.punchFist.position.x - this.punchFist.width / 2)
+                      )) /
+                      this.punchFist.width) *
+                    fruit.speed *
+                    2,
+                  y:
+                    (1 -
+                      Math.abs(fruit.position.x - this.punchFist.position.x) /
+                        this.punchFist.width) *
+                    fruit.speed *
+                    Math.sign(fruit.position.y - this.punchFist.position.y) *
+                    2,
+                });
+              }
+            }, 10);
         }
       }
       // fruit.destroy();
@@ -110,7 +157,7 @@ export default class MainScene extends GameScene {
 
         const fruit = new Fruit().set({
           size:
-            this.fruitAverageSize * 0.5 +
+            this.fruitAverageSize * 0.3 +
             Math.random() * this.fruitAverageSize * 0.3,
           speed:
             level.minSpeed + (level.maxSpeed - level.minSpeed) * Math.random(),

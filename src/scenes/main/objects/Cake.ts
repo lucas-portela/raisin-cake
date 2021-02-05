@@ -10,18 +10,18 @@ export default class Cake extends GameObject {
   setup() {
     this.width = Math.min(this.scene.width * 0.8, 400);
     this.height = this.width * 0.25;
-    this.body = Matter.Bodies.rectangle(
+    this.body = Matter.Bodies.polygon(
       this.scene.width / 2,
       this.scene.height - this.scene.height * 0.25 - this.height / 2,
-      this.width,
-      this.height,
+      8,
+      1,
       { isStatic: true }
     );
 
     const ch1 = 0.5;
-    const ch2 = 0.0;
+    const ch2 = 0.2;
     const ch3 = -0.5;
-    const cw1 = 0.45;
+    const cw1 = 0.48;
     const cw2 = 0.3;
 
     Matter.Body.setVertices(this.body, [

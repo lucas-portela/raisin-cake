@@ -1,8 +1,8 @@
 export default [
   {
     time: -1, // GameOver
-    spawnProbability: 0.3,
-    spawnInterval: 5,
+    spawnProbability: 1,
+    spawnInterval: 0.05,
     minSpeed: 3,
     maxSpeed: 10,
   },

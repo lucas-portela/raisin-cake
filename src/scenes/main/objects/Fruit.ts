@@ -13,22 +13,22 @@ export default class Fruit extends GameObject {
       this.position.y,
       this.size,
       {
-        friction: 0.3,
+        friction: 0,
         frictionAir: 0,
-        restitution: 0.1,
-        mass: 300,
+        restitution: 0.5,
+        mass: 3,
         angle: Math.random() * Math.PI,
       }
     );
 
-    const sprite = new PIXI.Sprite(this.scene.context.resources.raisin.texture);
-    const spriteScale = (this.size / sprite.width) * 1.9;
-    sprite.scale.set(spriteScale, spriteScale);
-    sprite.position.set(-sprite.width * 0.5, -sprite.height * 0.5);
-    this.graphics.addChild(sprite);
+    // const sprite = new PIXI.Sprite(this.scene.context.resources.raisin.texture);
+    // const spriteScale = (this.size / sprite.width) * 1.9;
+    // sprite.scale.set(spriteScale, spriteScale);
+    // sprite.position.set(-sprite.width * 0.5, -sprite.height * 0.5);
+    // this.graphics.addChild(sprite);
 
-    // this.graphics.beginFill(0x845ec2);
-    // this.graphics.drawCircle(0, 0, this.size);
+    this.graphics.beginFill(0x3e2664);
+    this.graphics.drawCircle(0, 0, this.size);
 
     Matter.Body.setVelocity(this.body, { x: 0, y: this.speed });
   }

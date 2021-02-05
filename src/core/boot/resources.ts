@@ -25,7 +25,7 @@ export default async function initResources(context: GameContext) {
     context.loader.load(async (_, resources) => {
       context.resources = resources;
       $("#resource-loading-screen .value").css("width", "100%");
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      //await new Promise((resolve) => setTimeout(resolve, 2000));
       $("#resource-loading-screen").fadeOut(1000);
       resolve();
     });
