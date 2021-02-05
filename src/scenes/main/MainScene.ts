@@ -1,3 +1,4 @@
+import * as $ from "jquery";
 import * as PIXI from "pixi.js";
 import * as Matter from "matter-js";
 import GameObject from "src/core/GameObject";
@@ -22,13 +23,16 @@ export default class MainScene extends GameScene {
   gameOver: boolean;
   expectedScreenHeight = 1920;
 
+  punchTimeScale = 0.4;
+  hitTimeScale = 0.2;
+
   spawnSlots = [];
 
   setup() {
     this.gameOver = false;
     this.points = 0;
 
-    this.timeSpeed = 1;
+    this.timeScale = 1;
 
     const { world } = this.physics;
     world.gravity.y = (this.height / this.expectedScreenHeight) * 0.001;
@@ -69,6 +73,13 @@ export default class MainScene extends GameScene {
 
     this.container.addChildAt(bg, 0);
 
+    $(window).keydown((evt) => {
+      if (evt.code == "KeyA") this.punchFist.direction = 1;
+      if (evt.code == "KeyD") this.punchFist.direction = -1;
+      this.punchFist.animI = 0;
+      this.timeScale = this.punchTimeScale;
+    });
+
     // this.debug();
   }
 
@@ -95,6 +106,7 @@ export default class MainScene extends GameScene {
         if (hasCake) {
           Matter.Body.setStatic(fruit.body, true);
           this.gameOver = true;
+          console.log("Game over!");
           this.physics.world.gravity.y =
             (this.height / this.expectedScreenHeight) * 0.1;
         } else {
@@ -109,33 +121,58 @@ export default class MainScene extends GameScene {
                   y: -fruit.speed * 0.4,
                 });
               } else if (hasPunchFist) {
+                this.timeScale = this.hitTimeScale;
                 Matter.Body.setVelocity(fruit.body, {
                   x:
                     ((this.punchFist.direction *
                       Math.abs(
                         fruit.position.x -
-                          (this.punchFist.position.x - this.punchFist.width / 2)
+                          (this.punchFist.position.x -
+                            (this.punchFist.direction * this.punchFist.width) /
+                              2)
                       )) /
                       this.punchFist.width) *
                     fruit.speed *
-                    2,
+                    3,
                   y:
                     (1 -
                       Math.abs(fruit.position.x - this.punchFist.position.x) /
                         this.punchFist.width) *
-                    fruit.speed *
-                    Math.sign(fruit.position.y - this.punchFist.position.y) *
+                    -fruit.speed *
                     2,
                 });
               }
             }, 10);
         }
       }
-      // fruit.destroy();
     }
   }
 
   update(deltaTime: number) {
+    if (this.punchFist.animI >= this.punchFist.animDuration / 2) {
+      this.timeScale = 1;
+      if (this.punchFist.animI >= this.punchFist.animDuration) {
+        var nextFistY = this.height * 0.3;
+        const lowerPossibleY = this.height * 0.58;
+        const fruits = this.gameObjects.filter(
+          (fruit) =>
+            fruit.name == "fruit" &&
+            !fruit.body.isStatic &&
+            fruit.body.position.y < lowerPossibleY
+        );
+        if (fruits.length > 0) {
+          const lowerFruit = fruits.sort(
+            (a, b) => b.position.y - a.position.y
+          )[0];
+          nextFistY = lowerFruit.position.y;
+        }
+
+        this.punchFist.position = {
+          x: this.punchFist.position.x,
+          y: Math.max(Math.min(nextFistY, lowerPossibleY), this.height * 0.2),
+        };
+      }
+    }
     this.lastFruitSpawn = this.lastFruitSpawn || 0;
 
     let level = this.gameOver
@@ -144,34 +181,39 @@ export default class MainScene extends GameScene {
         levels[levels.length - 1];
 
     if (
+      this.timeScale == 1 &&
       this.timestamp - this.lastFruitSpawn > level.spawnInterval &&
       level.spawnProbability > Math.random()
     ) {
-      const availableSlots = this.spawnSlots.filter((x) => !x.gameObject);
-      console.log(this.gameObjects.length);
-      if (availableSlots.length > 0) {
-        const slot =
-          availableSlots[
-            Math.round(Math.random() * (availableSlots.length - 1))
-          ];
+      const amount = Math.ceil(Math.random() * level.amount);
+      for (let i = 0; i < amount; i++) {
+        const availableSlots = this.spawnSlots.filter((x) => !x.gameObject);
+        console.log(this.gameObjects.length);
+        if (availableSlots.length > 0) {
+          const slot =
+            availableSlots[
+              Math.round(Math.random() * (availableSlots.length - 1))
+            ];
 
-        const fruit = new Fruit().set({
-          size:
-            this.fruitAverageSize * 0.3 +
-            Math.random() * this.fruitAverageSize * 0.3,
-          speed:
-            level.minSpeed + (level.maxSpeed - level.minSpeed) * Math.random(),
-          position: {
-            x: this.fruitAverageSize / 2 + this.fruitAverageSize * slot.index,
-            y: -this.fruitAverageSize,
-          },
-        });
+          const fruit = new Fruit().set({
+            size:
+              this.fruitAverageSize * 0.3 +
+              Math.random() * this.fruitAverageSize * 0.3,
+            speed:
+              level.minSpeed +
+              (level.maxSpeed - level.minSpeed) * Math.random(),
+            position: {
+              x: this.fruitAverageSize / 2 + this.fruitAverageSize * slot.index,
+              y: -this.fruitAverageSize,
+            },
+          });
 
-        slot.gameObject = fruit;
+          slot.gameObject = fruit;
 
-        this.add(fruit);
-        this.lastFruitSpawn = this.timestamp;
+          this.add(fruit);
+        } else break;
       }
+      this.lastFruitSpawn = this.timestamp;
     }
   }
 }

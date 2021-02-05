@@ -14,7 +14,7 @@ export default class GameScene implements GameSceneI {
   ticker: PIXI.Ticker;
   _tickerFn: (...params: any[]) => any;
   physics: Matter.Engine;
-  timeSpeed: number = 1;
+  timeScale: number = 1;
   _lastDeltaTime = null;
   timestamp = 0;
 
@@ -62,6 +62,7 @@ export default class GameScene implements GameSceneI {
   remove(gameObject: GameObject) {
     const i = this.gameObjects.indexOf(gameObject);
     if (i >= 0) {
+      console.log("Removing: ", gameObject.name);
       this.gameObjects.splice(i, 1);
       this.container.removeChild(gameObject.graphics);
       if (gameObject.body)
@@ -85,7 +86,7 @@ export default class GameScene implements GameSceneI {
     this.setup();
     this.ticker = this.context.ticker.add(
       (this._tickerFn = () => {
-        const deltaTime = (this.ticker.deltaMS / 1000) * this.timeSpeed;
+        const deltaTime = (this.ticker.deltaMS / 1000) * this.timeScale;
         this.timestamp += deltaTime;
         this._update(deltaTime);
       })
@@ -135,6 +136,7 @@ export default class GameScene implements GameSceneI {
   }
 
   _update(deltaTime: number) {
+    this.physics.timing.timeScale = this.timeScale;
     Matter.Engine.update(
       this.physics,
       deltaTime * 1000,
