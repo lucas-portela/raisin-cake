@@ -7,7 +7,6 @@ export default class Fruit extends GameObject {
   name = "fruit";
   size: number = 0;
   speed: number = 0;
-  elapsed = 0;
 
   setup() {
     this.body = Matter.Bodies.circle(
@@ -39,13 +38,12 @@ export default class Fruit extends GameObject {
   }
 
   update(deltaTime: number) {
-    if (this.body.velocity.y > this.speed) {
-      Matter.Body.setVelocity(this.body, {
-        x: 0,
-        y: this.speed,
-      });
-    }
-    this.elapsed += deltaTime;
+    // if (this.body.velocity.y > this.speed) {
+    //   Matter.Body.setVelocity(this.body, {
+    //     x: 0,
+    //     y: this.speed,
+    //   });
+    // }
     if (
       this.position.x < -this.size ||
       this.position.x > this.scene.width + this.size ||

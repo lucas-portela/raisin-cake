@@ -10,6 +10,7 @@ import levels from "./levels";
 import Candle from "./objects/Candle";
 import PunchFist from "./objects/PunchFist";
 import Ballon from "./objects/Ballon";
+import Cloud from "./objects/Cloud";
 
 export default class MainScene extends GameScene {
   fruitsInScreenHorizontaly = 30; // Parameter used to calculate fruit size
@@ -42,7 +43,52 @@ export default class MainScene extends GameScene {
     for (let i = 0; i < this.fruitsInScreenHorizontaly; i++)
       this.spawnSlots.push({ index: i, gameObject: null });
 
+    const bg = new PIXI.Sprite(this.context.resources.background.texture);
+    const bgScale = this.width / bg.width;
+    bg.scale.set(bgScale, bgScale);
+
+    const table = new PIXI.Sprite(this.context.resources.table.texture);
+    const tableScale = (Math.min(this.width, 800) / table.width) * 1.2;
+    table.scale.set(tableScale, tableScale);
+
     this.ground = this.add(new Ground()) as Ground;
+    this.add(
+      new Cloud().set({
+        scale: bgScale,
+        texture: this.context.resources.cloud1.texture,
+        position: { x: this.width * 0.5, y: this.height * 0.1 },
+      })
+    );
+    this.add(
+      new Cloud().set({
+        scale: bgScale,
+        texture: this.context.resources.cloud2.texture,
+        position: { x: -this.width * 0.5, y: this.height * 0.05 },
+      })
+    );
+    this.add(
+      new Cloud().set({
+        scale: bgScale,
+        texture: this.context.resources.cloud3.texture,
+        position: { x: this.width * 1.2, y: this.height * 0.15 },
+      })
+    );
+    this.add(
+      new Cloud().set({
+        scale: bgScale,
+        speed: this.width * 0.03,
+        texture: this.context.resources.cloud4.texture,
+        position: { x: -this.width * 1.2, y: this.height * 0.18 },
+      })
+    );
+    this.add(
+      new Cloud().set({
+        scale: bgScale,
+        speed: this.width * 0.03,
+        texture: this.context.resources.cloud5.texture,
+        position: { x: -this.width * 0.2, y: this.height * 0.15 },
+      })
+    );
     this.add(
       new Ballon().set({
         position: { x: this.width * 0.95, y: this.height * 0.73 },
@@ -57,30 +103,45 @@ export default class MainScene extends GameScene {
     this.candle = this.add(new Candle()) as Candle;
     this.punchFist = this.add(new PunchFist()) as PunchFist;
 
-    const table = new PIXI.Sprite(this.context.resources.table.texture);
-    const tableScale = (this.width / table.width) * 1.2;
-    table.scale.set(tableScale, tableScale);
     table.position.x = this.width / 2 - table.width / 2;
     table.position.y = this.height - table.height - this.ground.height * 0.7;
 
     this.container.addChildAt(table, 1);
 
-    const bg = new PIXI.Sprite(this.context.resources.background.texture);
-    const bgScale = this.width / bg.width;
-    bg.scale.set(bgScale, bgScale);
     bg.position.x = this.width / 2 - bg.width / 2;
     bg.position.y = this.height - bg.height - this.ground.height;
 
     this.container.addChildAt(bg, 0);
 
     $(window).keydown((evt) => {
-      if (evt.code == "KeyA") this.punchFist.direction = 1;
-      if (evt.code == "KeyD") this.punchFist.direction = -1;
-      this.punchFist.animI = 0;
-      this.timeScale = this.punchTimeScale;
+      if (evt.code == "KeyA") this.firePunch(-1);
+      if (evt.code == "KeyD") this.firePunch(1);
     });
 
     // this.debug();
+  }
+
+  firePunch(direction = null) {
+    this.punchFist.direction = direction || this.punchFist.direction;
+    this.punchFist.animI = 0;
+    this.timeScale = this.punchTimeScale;
+    var nextFistY = this.height * 0.3;
+    const lowerPossibleY = this.height * 0.58;
+    const fruits = this.gameObjects.filter(
+      (fruit) =>
+        fruit.name == "fruit" &&
+        !fruit.body.isStatic &&
+        fruit.body.position.y < lowerPossibleY
+    );
+    if (fruits.length > 0) {
+      const lowerFruit = fruits.sort((a, b) => b.position.y - a.position.y)[0];
+      nextFistY = lowerFruit.position.y;
+    }
+
+    this.punchFist.position = {
+      x: this.punchFist.position.x,
+      y: Math.max(Math.min(nextFistY, lowerPossibleY), this.height * 0.2),
+    };
   }
 
   releaseSlot(fruit: GameObject) {
@@ -151,27 +212,6 @@ export default class MainScene extends GameScene {
   update(deltaTime: number) {
     if (this.punchFist.animI >= this.punchFist.animDuration / 2) {
       this.timeScale = 1;
-      if (this.punchFist.animI >= this.punchFist.animDuration) {
-        var nextFistY = this.height * 0.3;
-        const lowerPossibleY = this.height * 0.58;
-        const fruits = this.gameObjects.filter(
-          (fruit) =>
-            fruit.name == "fruit" &&
-            !fruit.body.isStatic &&
-            fruit.body.position.y < lowerPossibleY
-        );
-        if (fruits.length > 0) {
-          const lowerFruit = fruits.sort(
-            (a, b) => b.position.y - a.position.y
-          )[0];
-          nextFistY = lowerFruit.position.y;
-        }
-
-        this.punchFist.position = {
-          x: this.punchFist.position.x,
-          y: Math.max(Math.min(nextFistY, lowerPossibleY), this.height * 0.2),
-        };
-      }
     }
     this.lastFruitSpawn = this.lastFruitSpawn || 0;
 
@@ -210,7 +250,7 @@ export default class MainScene extends GameScene {
 
           slot.gameObject = fruit;
 
-          this.add(fruit);
+          setTimeout(() => this.add(fruit), 100);
         } else break;
       }
       this.lastFruitSpawn = this.timestamp;

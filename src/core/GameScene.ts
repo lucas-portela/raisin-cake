@@ -136,7 +136,6 @@ export default class GameScene implements GameSceneI {
   }
 
   _update(deltaTime: number) {
-    this.physics.timing.timeScale = this.timeScale;
     Matter.Engine.update(
       this.physics,
       deltaTime * 1000,
@@ -147,6 +146,7 @@ export default class GameScene implements GameSceneI {
     this.gameObjects.forEach((gameObject) => {
       gameObject._update(deltaTime);
     });
+    this.physics.timing.timeScale = this.timeScale;
   }
 
   onCollisionStart(gameObjectA: GameObject, gameObjectB: GameObject) {}
