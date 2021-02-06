@@ -1,6 +1,6 @@
 import * as Matter from "matter-js";
 import * as PIXI from "pixi.js";
-import GameContext from "./types/GameContext";
+import GameContext from "./GameContext";
 
 import GameObject from "./GameObject";
 

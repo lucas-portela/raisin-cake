@@ -166,6 +166,8 @@ export default class MainScene extends GameScene {
     if (this.started) return;
     $("#game-title").fadeOut(1000);
     $("#play-btn").fadeOut(1000);
+    $("#credits").fadeOut(1000);
+    $("#no-raisins").fadeOut(1000);
     this.started = true;
   }
 
@@ -211,18 +213,14 @@ export default class MainScene extends GameScene {
     }
   }
 
-  setQuestion(question: String, answer: String, wrongAnswers: String[]) {
+  setQuestion(question: String, answer: String) {
     this.question = question;
     this.typed = "";
-    this.showKeys(
-      answer.toString() +
-        (false && wrongAnswers.length > 0
-          ? wrongAnswers[Math.floor(wrongAnswers.length * Math.random())].slice(
-              0,
-              Math.round(answer.length * 0.2)
-            )
-          : "")
-    );
+    var wrong = "";
+    const wrongLetters = "123456789bakchayettaasasçljaskkuytweqwbvzx";
+    for (let i = 0; i < Math.round(answer.length * 0.1); i++)
+      wrong += wrongLetters[Math.floor(wrongLetters.length * Math.random())];
+    this.showKeys(answer.toString() + wrong);
     this.answer = answer.toUpperCase().replace(/\s/g, "");
     this.setDisplay(this.question);
   }
@@ -336,11 +334,7 @@ export default class MainScene extends GameScene {
     }
     if (!this.gameOver && this.question == null) {
       const question = questions[Math.floor(Math.random() * questions.length)];
-      this.setQuestion(
-        question.question,
-        question.answer,
-        question.wrongAnswers
-      );
+      this.setQuestion(question.question, question.answer);
     }
     if (this.punchFist.animI >= this.punchFist.animDuration / 2) {
       if (this.punchQueue == 0) this.timeScale = 1;

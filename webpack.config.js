@@ -9,7 +9,7 @@ module.exports = webpackConfig({
     assetsFolder: "assets",
     HTMLTemplate: "assets/index.html",
     templateParameters: {
-        "title": ""
+        "title": "Raisin Cake"
     },
     https: false,
 })

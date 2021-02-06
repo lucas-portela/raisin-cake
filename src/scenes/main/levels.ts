@@ -18,7 +18,7 @@ export default [
   {
     time: 70,
     spawnProbability: 0.5,
-    spawnInterval: 3,
+    spawnInterval: 2,
     minSpeed: 0.2,
     maxSpeed: 0.8,
     amount: 3,
