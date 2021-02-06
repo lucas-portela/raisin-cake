@@ -4,23 +4,73 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rasin Cake</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500&display=swap" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <style>
+    body .page{
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100vw;
+      background-image: url(dist/sprites/redirect-page-bg.png);
+      background-size: cover;
+      background-position: bottom right;
+      font-family: "M PLUS Rounded 1c", sans-serif;
+      color: white;
+      text-shadow: #da4581 1px -2px 1px;
+      min-height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    a{
+      color: white;
+      text-shadow: #da4581 1px -2px 1px;
+    }
+
+    .game-title{
+      position: absolute;
+      right: 0px;
+      bottom: 20%;
+      width: 90%;
+      max-width: 30vh;
+    }
+  </style>
 </head>
 <body>
-  <h2>Raisin Cake</h2>
-  <hr><br>
-  <b>Gráficos: </b> <a href="https://github.com/ZeusWesley/" target="_blank">Elizeu Wesley</a><br>
-  <b>Desenvolvimento</b>: <a href="https://github.com/lucas-portela/" target="_blank">Lucas Portela</a><br>
-  <b>Repositório Github:</b> <a href="https://github.com/lucas-portela/raisin-cake" target="_blank">raisin-cake</a>
-  <br><br>
-  <i>Uma homenagem feita com carinho para Bia Montalvão no seu 26º aniversário.</i>
-  <br><br>
-  <small>
-    <a href="dist/index.html">
-      <button>Clique aqui para acessar o jogo</button>
-    </a>
-  </small>
+  <div class="page">
+    <img class="game-title" src="dist/sprites/game-title.png">
+    <h2>Raisin Cake</h2>
+    <b>Gráficos: </b> <a href="https://github.com/ZeusWesley/" target="_blank">Elizeu Wesley</a><br>
+    <b>Desenvolvimento</b>: <a href="https://github.com/lucas-portela/" target="_blank">Lucas Portela</a><br>
+    <b>Repositório Github:</b> <a href="https://github.com/lucas-portela/raisin-cake" target="_blank">raisin-cake</a>
+    <br><br>
+    <i>Uma homenagem feita com carinho para Bia Montalvão no seu 26º aniversário.</i>
+    <br><br>
+    <small>
+      <div class="message">
+        Por favor, mantenha o seu celular na posição "retrato" para jogar!<br><br>
+
+      </div>
+      <a class="access-link" href="dist/index.html">
+        <button>Clique aqui para acessar o jogo</button>
+      </a>
+      <br><br><br>
+    </small>
+  </div>
   <script>
-    setTimeout(()=>window.location.href="dist/index.html",20000);
+    $(function(){
+      $(window).on("orientationchange",()=>{
+        if(window.screen.orientation.type.indexOf('portrait')!=-1){
+          $('.message').hide();
+          $('.access-link').show();
+        }
+        else {
+          $('.message').show();
+          $('.access-link').hide();
+        }
+      }).trigger('orientationchange')
+    });
   </script>
 </body>
 </html>
