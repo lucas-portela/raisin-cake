@@ -8,7 +8,7 @@ export default async function initGraphics(context: GameContext) {
     backgroundColor: 0x000000,
     width: context.width,
     height: context.height,
-    antialias: false,
+    antialias: true,
   });
   context.stage = context.pixiApp.stage;
   context.ticker = context.pixiApp.ticker;

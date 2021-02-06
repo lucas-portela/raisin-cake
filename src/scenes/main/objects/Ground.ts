@@ -6,7 +6,7 @@ export default class Ground extends GameObject {
   height: number;
 
   setup() {
-    this.height = Math.min(this.scene.height * 0.25, 300);
+    this.height = Math.min(this.scene.height * 0.35, 300);
     this.body = Matter.Bodies.rectangle(
       this.scene.width / 2,
       this.scene.height - this.height / 2,
@@ -15,7 +15,7 @@ export default class Ground extends GameObject {
       { isStatic: true }
     );
 
-    this.graphics.beginFill(0x1e8e63);
+    this.graphics.beginFill(0xda4581);
     this.graphics.drawRect(
       -this.scene.width / 2,
       -this.height / 2,

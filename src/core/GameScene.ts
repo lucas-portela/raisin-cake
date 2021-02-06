@@ -26,9 +26,10 @@ export default class GameScene implements GameSceneI {
     return this.context.height;
   }
 
-  add(gameObject: GameObject) {
+  add(gameObject: GameObject, index?: number) {
     this.gameObjects.push(gameObject);
-    this.container.addChild(gameObject.graphics);
+    if (index != null) this.container.addChildAt(gameObject.graphics, index);
+    else this.container.addChild(gameObject.graphics);
     gameObject._instantiate(this);
     if (gameObject.body) {
       Matter.World.add(this.physics.world, gameObject.body);
@@ -62,7 +63,6 @@ export default class GameScene implements GameSceneI {
   remove(gameObject: GameObject) {
     const i = this.gameObjects.indexOf(gameObject);
     if (i >= 0) {
-      console.log("Removing: ", gameObject.name);
       this.gameObjects.splice(i, 1);
       this.container.removeChild(gameObject.graphics);
       if (gameObject.body)

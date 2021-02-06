@@ -11,6 +11,7 @@ import Candle from "./objects/Candle";
 import PunchFist from "./objects/PunchFist";
 import Ballon from "./objects/Ballon";
 import Cloud from "./objects/Cloud";
+import questions from "./questions";
 
 export default class MainScene extends GameScene {
   fruitsInScreenHorizontaly = 30; // Parameter used to calculate fruit size
@@ -29,9 +30,19 @@ export default class MainScene extends GameScene {
 
   spawnSlots = [];
 
+  question: String = null;
+  answer: String = null;
+  typed: String = null;
+  started: boolean;
+
+  punchQueue: number;
+  lastSetDisplay: number;
+
   setup() {
+    this.started = false;
     this.gameOver = false;
     this.points = 0;
+    this.punchQueue = 0;
 
     this.timeScale = 1;
 
@@ -48,7 +59,7 @@ export default class MainScene extends GameScene {
     bg.scale.set(bgScale, bgScale);
 
     const table = new PIXI.Sprite(this.context.resources.table.texture);
-    const tableScale = (Math.min(this.width, 800) / table.width) * 1.2;
+    const tableScale = (this.width / table.width) * 1.3;
     table.scale.set(tableScale, tableScale);
 
     this.ground = this.add(new Ground()) as Ground;
@@ -91,20 +102,22 @@ export default class MainScene extends GameScene {
     );
     this.add(
       new Ballon().set({
-        position: { x: this.width * 0.95, y: this.height * 0.73 },
+        ground: this.ground,
+        position: { x: this.width * 0.95, y: this.ground.height * 1.85 },
       })
     );
     this.add(
       new Ballon().set({
-        position: { x: this.width * 0.05, y: this.height * 0.73 },
+        ground: this.ground,
+        position: { x: this.width * 0.05, y: this.ground.height * 1.85 },
       })
     );
-    this.cake = this.add(new Cake()) as Cake;
-    this.candle = this.add(new Candle()) as Candle;
+    this.cake = this.add(new Cake().set({ ground: this.ground })) as Cake;
+    this.candle = this.add(new Candle().set({ ground: this.ground })) as Candle;
     this.punchFist = this.add(new PunchFist()) as PunchFist;
 
     table.position.x = this.width / 2 - table.width / 2;
-    table.position.y = this.height - table.height - this.ground.height * 0.7;
+    table.position.y = this.height - table.height - this.ground.height * 0.75;
 
     this.container.addChildAt(table, 1);
 
@@ -113,20 +126,119 @@ export default class MainScene extends GameScene {
 
     this.container.addChildAt(bg, 0);
 
-    $(window).keydown((evt) => {
-      if (evt.code == "KeyA") this.firePunch(-1);
-      if (evt.code == "KeyD") this.firePunch(1);
+    this.container.position.y = -bg.position.y * 0.8;
+
+    $("#main-scene-gui .keyboard .key").hide();
+
+    const scene = this;
+    $("#main-scene-gui .keyboard .key").click(function () {
+      if (scene.gameOver || scene.question == null) return;
+      const key = $(this).text();
+      if (key == "?") {
+        scene.setDisplay(scene.question);
+        scene.typed = "";
+      } else if (key == "×") {
+        scene.typed = scene.typed.slice(0, Math.max(scene.typed.length - 1, 0));
+        $("#main-scene-gui .keyboard .display .value").html(scene.typed);
+      } else {
+        scene.typed += key.toUpperCase();
+        $("#main-scene-gui .keyboard .display .value").html(scene.typed);
+        if (scene.typed == scene.answer) {
+          scene.firePunch();
+          scene.question = null;
+          scene.typed = null;
+          scene.answer = null;
+          $("#main-scene-gui .keyboard .display .value").html("");
+        }
+      }
     });
 
-    // this.debug();
+    $("#play-btn").click(() => {
+      this.start();
+    });
+
+    $("#restart-btn").click(() => {
+      window.location.reload();
+    });
   }
 
-  firePunch(direction = null) {
-    this.punchFist.direction = direction || this.punchFist.direction;
+  async start() {
+    if (this.started) return;
+    $("#game-title").fadeOut(1000);
+    $("#play-btn").fadeOut(1000);
+    this.started = true;
+  }
+
+  addPoints() {
+    this.points++;
+    $("#points").html(this.points);
+    $("#points").show();
+  }
+
+  showKeys(keys: String) {
+    keys = keys.toUpperCase();
+    console.log(keys);
+    $("#main-scene-gui .keyboard").show();
+    $("#main-scene-gui .keyboard .key").each(function () {
+      if ($(this).hasClass("fixed") || keys.includes($(this).text()))
+        $(this).show();
+      else $(this).hide();
+    });
+
+    const width = $("#main-scene-gui .keyboard").width();
+    const height = $("#main-scene-gui .keyboard").height();
+    const scale = Math.min(
+      this.width / width,
+      (this.ground.height * 0.75) / height
+    );
+    $("#main-scene-gui .keyboard").css({
+      left: "50vw",
+      bottom: (this.ground.height * 0.35).toFixed(2) + "px",
+      transform: `translate(-50%, 50%) scale(${scale},${scale})`,
+    });
+  }
+
+  async setDisplay(text: String) {
+    const startTime = Date.now();
+    this.lastSetDisplay = startTime;
+    text = text.toUpperCase();
+    for (var i = 1; i <= text.length; i++) {
+      if (this.lastSetDisplay > startTime) break;
+      $("#main-scene-gui .keyboard .display .value").html(text.slice(0, i));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 10 + 100 * Math.random())
+      );
+    }
+  }
+
+  setQuestion(question: String, answer: String, wrongAnswers: String[]) {
+    this.question = question;
+    this.typed = "";
+    this.showKeys(
+      answer.toString() +
+        (false && wrongAnswers.length > 0
+          ? wrongAnswers[Math.floor(wrongAnswers.length * Math.random())].slice(
+              0,
+              Math.round(answer.length * 0.2)
+            )
+          : "")
+    );
+    this.answer = answer.toUpperCase().replace(/\s/g, "");
+    this.setDisplay(this.question);
+  }
+
+  firePunch() {
+    if (
+      this.punchFist.animI < this.punchFist.animDuration &&
+      this.punchFist.animI > 0
+    ) {
+      this.punchQueue++;
+      return;
+    }
     this.punchFist.animI = 0;
     this.timeScale = this.punchTimeScale;
-    var nextFistY = this.height * 0.3;
-    const lowerPossibleY = this.height * 0.58;
+    var nextFistY = this.height * 0.05;
+    const lowerPossibleY = this.height * 0.5;
     const fruits = this.gameObjects.filter(
       (fruit) =>
         fruit.name == "fruit" &&
@@ -135,12 +247,14 @@ export default class MainScene extends GameScene {
     );
     if (fruits.length > 0) {
       const lowerFruit = fruits.sort((a, b) => b.position.y - a.position.y)[0];
+      this.punchFist.direction =
+        lowerFruit.position.x < this.width / 2 ? 1 : -1;
       nextFistY = lowerFruit.position.y;
     }
 
     this.punchFist.position = {
       x: this.punchFist.position.x,
-      y: Math.max(Math.min(nextFistY, lowerPossibleY), this.height * 0.2),
+      y: Math.max(Math.min(nextFistY, lowerPossibleY), this.height * 0.05),
     };
   }
 
@@ -166,10 +280,13 @@ export default class MainScene extends GameScene {
       if (gameObjectA.name != gameObjectB.name) {
         if (hasCake) {
           Matter.Body.setStatic(fruit.body, true);
-          this.gameOver = true;
-          console.log("Game over!");
-          this.physics.world.gravity.y =
-            (this.height / this.expectedScreenHeight) * 0.1;
+          if (!this.gameOver) {
+            this.gameOver = true;
+            this.setDisplay("game over!");
+            $("#restart-btn").show();
+            this.physics.world.gravity.y =
+              (this.height / this.expectedScreenHeight) * 0.1;
+          }
         } else {
           if (hasGround || hasPunchFist)
             setTimeout(() => {
@@ -182,6 +299,7 @@ export default class MainScene extends GameScene {
                   y: -fruit.speed * 0.4,
                 });
               } else if (hasPunchFist) {
+                this.addPoints();
                 this.timeScale = this.hitTimeScale;
                 Matter.Body.setVelocity(fruit.body, {
                   x:
@@ -210,9 +328,29 @@ export default class MainScene extends GameScene {
   }
 
   update(deltaTime: number) {
-    if (this.punchFist.animI >= this.punchFist.animDuration / 2) {
-      this.timeScale = 1;
+    if (!this.started) return;
+    if (this.container.position.y > 0) {
+      this.container.position.y -= 50 * deltaTime;
+      this.timestamp = 0;
+      return;
     }
+    if (!this.gameOver && this.question == null) {
+      const question = questions[Math.floor(Math.random() * questions.length)];
+      this.setQuestion(
+        question.question,
+        question.answer,
+        question.wrongAnswers
+      );
+    }
+    if (this.punchFist.animI >= this.punchFist.animDuration / 2) {
+      if (this.punchQueue == 0) this.timeScale = 1;
+      else if (this.punchFist.animI >= this.punchFist.animDuration * 0.7) {
+        this.punchFist.animI = 0;
+        this.punchQueue--;
+        this.firePunch();
+      }
+    }
+
     this.lastFruitSpawn = this.lastFruitSpawn || 0;
 
     let level = this.gameOver
@@ -228,7 +366,7 @@ export default class MainScene extends GameScene {
       const amount = Math.max(Math.round(Math.random() * level.amount), 1);
       for (let i = 0; i < amount; i++) {
         const availableSlots = this.spawnSlots.filter((x) => !x.gameObject);
-        console.log(this.gameObjects.length);
+        // console.log(this.gameObjects.length);
         if (availableSlots.length > 0) {
           const slot =
             availableSlots[
@@ -250,7 +388,7 @@ export default class MainScene extends GameScene {
 
           slot.gameObject = fruit;
 
-          setTimeout(() => this.add(fruit), 100);
+          setTimeout(() => this.add(fruit, 11), 100);
         } else break;
       }
       this.lastFruitSpawn = this.timestamp;

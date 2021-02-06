@@ -1,18 +1,20 @@
 import * as PIXI from "pixi.js";
 import * as Matter from "matter-js";
 import GameObject from "../../../core/GameObject";
+import Ground from "./Ground";
 
 export default class Cake extends GameObject {
   name = "cake";
   height: number;
   width: number;
+  ground: Ground;
 
   setup() {
     this.width = Math.min(this.scene.width * 0.8, 400);
     this.height = this.width * 0.25;
     this.body = Matter.Bodies.polygon(
       this.scene.width / 2,
-      this.scene.height - this.scene.height * 0.25 - this.height / 2,
+      this.scene.height - this.ground.height - this.height / 2,
       8,
       1,
       { isStatic: true }

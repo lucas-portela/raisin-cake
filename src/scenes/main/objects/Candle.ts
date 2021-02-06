@@ -1,11 +1,13 @@
 import * as PIXI from "pixi.js";
 import * as Matter from "matter-js";
 import GameObject from "../../../core/GameObject";
+import Ground from "./Ground";
 
 export default class Candle extends GameObject {
   name = "candle";
   height: number;
   width: number;
+  ground: Ground;
 
   setup() {
     this.width = Math.min(this.scene.width * 0.15, 80);
@@ -13,7 +15,7 @@ export default class Candle extends GameObject {
 
     this.body = Matter.Bodies.rectangle(
       this.scene.width / 2,
-      this.scene.height - this.scene.height * 0.25 - this.width * 1.6,
+      this.scene.height - this.ground.height - this.width * 1.6,
       this.width,
       this.height,
       { isStatic: true }

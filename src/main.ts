@@ -6,6 +6,10 @@ import initScenes from "./core/boot/scenes";
 import GameContext from "./core/GameContext";
 
 $(async () => {
+  $(document).bind("contextmenu", function (e) {
+    return false;
+  });
+
   const context = new GameContext();
 
   await initGraphics(context);

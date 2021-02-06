@@ -3,6 +3,9 @@ body {
   margin: 0 auto;
   background-color: black;
 }
+body * {
+  font-family: "M PLUS Rounded 1c", sans-serif;
+}
 
 #resource-loading-screen {
   position: fixed;
@@ -60,4 +63,113 @@ body {
   border-radius: 20px;
   background-color: #da4581;
   transition: width 1s;
+}
+
+#main-scene-gui {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  z-index: 998;
+}
+
+#main-scene-gui .keyboard {
+  display: none;
+  position: absolute;
+  width: 80vw;
+  padding: 10px 0px;
+  box-sizing: border-box;
+  background-color: transparent;
+  color: #4692e8;
+  text-align: center;
+}
+
+#main-scene-gui .keyboard .display {
+  display: block;
+  margin-left: 10%;
+  width: 80%;
+  padding: 1vw;
+  background-color: white;
+  border-radius: 3vw;
+  box-sizing: border-box;
+  margin-bottom: 3vw;
+  font-size: 3vw;
+  box-shadow: inset 0px -3px 3px 1px rgba(0, 0, 0, 0.3);
+}
+
+#main-scene-gui .keyboard .display .cursor {
+  display: inline-block;
+  width: 1vw;
+  height: 3vw;
+  background-color: #4692e8;
+  margin-bottom: -0.2vw;
+}
+
+#main-scene-gui .keyboard .key {
+  display: inline-block;
+  background-image: url(../sprites/keyboard-key.png);
+  background-size: 100% auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 1.2vw;
+  width: 8vw;
+  height: 8vw;
+  padding-bottom: 1vw;
+  text-align: center;
+  transition: transform 0.2s;
+  user-select: none;
+  font-size: 3vw;
+}
+
+#main-scene-gui .keyboard .key.fixed {
+  color: #da4581;
+}
+
+#main-scene-gui .keyboard .key:active {
+  transform: scale(0.8);
+}
+
+#game-title {
+  position: absolute;
+  top: 24%;
+  right: 0%;
+  width: 95%;
+  transform: translate(0%, -50%);
+}
+
+#play-btn {
+  position: absolute;
+  top: 56%;
+  left: 50%;
+  height: 15%;
+  transform: translate(-50%, -50%);
+}
+
+#play-btn img {
+  height: 100%;
+}
+
+#restart-btn {
+  display: none;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  height: 15%;
+  transform: translate(-50%, -50%);
+}
+
+#restart-btn img {
+  height: 100%;
+}
+
+#points {
+  display: none;
+  position: absolute;
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10vw;
+  color: white;
+  text-shadow: #da4581 1px -4px 1px;
 }
